@@ -165,6 +165,15 @@ else
 EOJSON
 fi
 
+# --- 5. プラグインソース内のバージョンキャッシュを削除 ---
+# シンボリックリンク経由でプラグインシステムがハッシュ付きディレクトリを作成することがある
+for hash_dir in "$PLUGIN_SOURCE"/[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]; do
+  if [ -d "$hash_dir" ]; then
+    rm -rf "$hash_dir"
+    info "キャッシュを削除: $(basename "$hash_dir")"
+  fi
+done
+
 # --- 完了 ---
 echo ""
 ok "✓ インストール完了!"
