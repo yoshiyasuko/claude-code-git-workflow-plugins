@@ -1,0 +1,20 @@
+{
+  "name": "git-workflow-plugins",
+  "owner": {
+    "name": "yoshiyasuko"
+  },
+  "metadata": {
+    "description": "Git workflow automation plugins for Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "git-workflow",
+      "source": "./plugins/git-workflow",
+      "description": "Conventional Commits workflow, GitHub PR creation, and branch cleanup. Supports lifecycle hooks via .claude/skill-hooks.md for project-specific extensions.",
+      "author": {
+        "name": "yoshiyasuko"
+      },
+      "keywords": ["git", "workflow", "commits", "pull-requests"]
+    }
+  ]
+}

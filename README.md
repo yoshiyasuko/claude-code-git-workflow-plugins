@@ -1,20 +1,20 @@
 # git-workflow plugin
 
-Claude Code plugin for git workflow automation.
+Claude Code 用の git ワークフロー自動化プラグイン。
 
-## Commands
+## コマンド
 
-| Command | Description |
-|---------|-------------|
-| `/commit` | Create commits in Conventional Commits format with optional push and lifecycle hooks |
-| `/create-pr` | Create or update GitHub PRs with automatic rebase, diff analysis, and lifecycle hooks |
-| `/sync-main` | Switch to main, pull latest, and clean up local branches deleted on remote |
+| コマンド | 説明 |
+|---------|------|
+| `/commit` | Conventional Commits 形式でコミットを作成。プッシュ・ライフサイクルフックに対応 |
+| `/create-pr` | GitHub PR の作成・更新。自動 rebase、差分分析、ライフサイクルフックに対応 |
+| `/sync-main` | main に切り替えて最新化し、リモートで削除済みのローカルブランチをクリーンアップ |
 
-## Lifecycle Hooks
+## ライフサイクルフック
 
-Generic commands support project-specific extensions via a **skill hooks** configuration file. Create `.claude/skill-hooks.md` in your project root to map hooks to your project's skills.
+プロジェクト固有の拡張を **スキルフック** 設定ファイルで定義できる。プロジェクトルートに `.claude/skill-hooks.md` を作成してフックとスキルを紐付ける。
 
-### Hook format
+### フックの書式
 
 ```markdown
 # Skill Hooks
@@ -23,46 +23,52 @@ Generic commands support project-specific extensions via a **skill hooks** confi
 
 | フック | スキル | 説明 |
 |-------|-------|------|
-| pre-commit | your-skill | Runs before commit (e.g., doc updates, linting) |
-| post-push | your-skill | Runs after push with user confirmation (質問: "...", 選択肢: ["...", "..."]) |
+| pre-commit | your-skill | コミット前に実行（例: ドキュメント更新、リント） |
+| post-push | your-skill | プッシュ後にユーザー確認付きで実行（質問: "...", 選択肢: ["...", "..."]） |
 
 ## create-pr
 
 | フック | スキル | 説明 |
 |-------|-------|------|
-| post-pr | your-skill | Runs after PR creation/update with user confirmation |
+| post-pr | your-skill | PR 作成・更新後にユーザー確認付きで実行 |
 ```
 
-### Available hooks
+### 利用可能なフック
 
-| Command | Hook | Timing |
-|---------|------|--------|
-| `/commit` | `pre-commit` | After status check, before staging |
-| `/commit` | `post-push` | After push (asks user before executing) |
-| `/create-pr` | `post-pr` | After PR create/update (asks user before executing) |
+| コマンド | フック | タイミング |
+|---------|-------|-----------|
+| `/commit` | `pre-commit` | ステータス確認後、ステージング前 |
+| `/commit` | `post-push` | プッシュ後（実行前にユーザーに確認） |
+| `/create-pr` | `post-pr` | PR 作成・更新後（実行前にユーザーに確認） |
 
-If `.claude/skill-hooks.md` doesn't exist or a hook isn't defined, the step is silently skipped.
+`.claude/skill-hooks.md` が存在しない場合やフックが未定義の場合はスキップされる。
 
-## `/commit` arguments
+## `/commit` の引数
 
-| Argument | Effect |
-|----------|--------|
-| `skip-hooks` | Skip pre-commit and post-push hooks |
-| `skip-push` | Skip push confirmation step |
+| 引数 | 効果 |
+|------|------|
+| `skip-hooks` | pre-commit / post-push フックをスキップ |
+| `skip-push` | プッシュ確認ステップをスキップ |
 
-Other commands (e.g., `/deploy`) can call `/commit skip-push skip-hooks` to run only the core commit workflow.
+他のコマンド（例: `/deploy`）から `/commit skip-push skip-hooks` を呼び出すことで、コアのコミット処理のみを実行できる。
 
-## Installation
+## インストール
 
 ```bash
-# From GitHub (private repo)
-claude /install-plugin https://github.com/yoshiyasuko/git-workflow-plugin
+# 1. マーケットプレイスを追加
+/plugin marketplace add yoshiyasuko/claude-code-git-workflow-plugins
 
-# Local development
-claude --plugin-dir ~/git-workflow-plugin
+# 2. プラグインをインストール
+/plugin install git-workflow@git-workflow-plugins
 ```
 
-## Example: GAS project hooks
+### ローカル開発
+
+```bash
+claude --plugin-dir .
+```
+
+## 使用例: GAS プロジェクトのフック
 
 ```markdown
 # Skill Hooks
