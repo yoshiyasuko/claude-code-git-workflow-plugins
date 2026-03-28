@@ -8,4 +8,8 @@
 
 # Claude Code
 .claude/settings.local.json
+.claude/skills/
 skills-lock.json
+
+# Plugin version cache (created by Claude Code when symlink install is used)
+plugins/*/[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]/
