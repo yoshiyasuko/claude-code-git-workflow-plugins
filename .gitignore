@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+*~
+
+# Claude Code
+CLAUDE.md
+.claude/settings.local.json

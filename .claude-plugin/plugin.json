@@ -1,0 +1,7 @@
+{
+  "name": "git-workflow",
+  "description": "Conventional Commits workflow, GitHub PR creation, and branch cleanup. Supports lifecycle hooks via .claude/skill-hooks.md for project-specific extensions.",
+  "author": {
+    "name": "yoshiyasuko"
+  }
+}
