@@ -54,6 +54,8 @@ Claude Code 用の git ワークフロー自動化プラグイン。
 
 ## インストール
 
+### GitHub 経由（推奨）
+
 ```bash
 # 1. マーケットプレイスを追加
 /plugin marketplace add yoshiyasuko/claude-code-git-workflow-plugins
@@ -62,11 +64,23 @@ Claude Code 用の git ワークフロー自動化プラグイン。
 /plugin install git-workflow@git-workflow-plugins
 ```
 
-### ローカル開発
+### シンボリックリンク方式（開発者向け）
+
+`git pull` するだけでプラグインが最新に更新される方式。
 
 ```bash
-claude --plugin-dir .
+git clone git@github.com:yoshiyasuko/claude-code-git-workflow-plugins.git
+cd claude-code-git-workflow-plugins
+./install.sh
 ```
+
+`install.sh` は以下を実行する:
+1. マーケットプレイスを `~/.claude/plugins/known_marketplaces.json` に登録
+2. `~/.claude/plugins/cache/` にシンボリックリンクを作成（コピーではなくリンク）
+3. `~/.claude/plugins/installed_plugins.json` にプラグインを登録
+4. `~/.claude/settings.json` の `enabledPlugins` でグローバルに有効化
+
+前提: macOS 標準の `python3`（JSON 操作に使用）
 
 ## 使用例: GAS プロジェクトのフック
 
