@@ -47,10 +47,11 @@ Claude Code 用の git ワークフロー自動化プラグイン。
 
 | 引数 | 効果 |
 |------|------|
-| `skip-hooks` | pre-commit / post-push フックをスキップ |
+| `skip-pre-hooks` | pre-commit フックをスキップ |
+| `skip-post-hooks` | post-push フックをスキップ |
 | `skip-push` | プッシュ確認ステップをスキップ |
 
-他のコマンド（例: `/deploy`）から `/commit skip-push skip-hooks` を呼び出すことで、コアのコミット処理のみを実行できる。
+他のコマンド（例: `/deploy`）から `/commit skip-push skip-pre-hooks skip-post-hooks` を呼び出すことで、コアのコミット処理のみを実行できる。
 
 ## インストール
 

@@ -26,8 +26,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `/commit`: `pre-commit`（ステージング前）、`post-push`（プッシュ後、ユーザー確認付き）
 - `/create-pr`: `post-pr`（PR 作成・更新後、ユーザー確認付き）
 
-フック対応コマンドは `skip-hooks` 引数でフック実行をバイパスできる。`/commit` は `skip-push` 引数でプッシュステップもスキップ可能 — `/create-pr` が内部で `/commit` を呼ぶ際に使用（`git-workflow:commit skip-push skip-hooks`）。
+フック対応コマンドは `skip-pre-hooks`（pre フックをスキップ）と `skip-post-hooks`（post フックをスキップ）引数でフック実行を個別にバイパスできる。`/commit` は `skip-push` 引数でプッシュステップもスキップ可能 — `/create-pr` が内部で `/commit` を呼ぶ際に使用（`git-workflow:commit skip-push skip-pre-hooks skip-post-hooks`）。
 
 ### コマンド間の依存関係
 
-`/create-pr` は未コミット変更がある場合に `/commit` を（Skill ツール経由で）呼び出し、`skip-push skip-hooks` を渡してコアのコミット処理のみを実行する。呼び出し後は create-pr フローのステップ4から再開する。`commit.md` および `create-pr.md` 双方にフロー復帰の指示を記述し、制御が途切れないようにしている。
+`/create-pr` は未コミット変更がある場合に `/commit` を（Skill ツール経由で）呼び出し、`skip-push skip-pre-hooks skip-post-hooks` を渡してコアのコミット処理のみを実行する。呼び出し後は create-pr フローのステップ4から再開する。`commit.md` および `create-pr.md` 双方にフロー復帰の指示を記述し、制御が途切れないようにしている。
