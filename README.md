@@ -15,6 +15,75 @@ Claude Code 用の git ワークフロー自動化プラグイン。
 
 プロジェクト固有の拡張を **スキルフック** 設定ファイルで定義できる。プロジェクトルートに `.claude/skill-hooks.md` を作成してフックとスキルを紐付ける。
 
+### フロー図
+
+#### `/commit` のフロー
+
+```mermaid
+flowchart TD
+    A[変更状況の確認] --> B{skip-pre-hooks?}
+    B -- No --> C[🔵 pre-commit フック実行]
+    B -- Yes --> D
+    C --> D[変更の分割 & ステージング]
+    D --> E[コミット作成]
+    E --> F{skip-push?}
+    F -- No --> G{プッシュしますか?}
+    F -- Yes --> END[完了]
+    G -- はい --> H[git push]
+    G -- いいえ --> END
+    H --> I{skip-post-hooks?}
+    I -- No --> J[🟢 post-push フック実行<br/>ユーザー確認付き]
+    I -- Yes --> END
+    J --> END
+
+    style C fill:#dbeafe,stroke:#3b82f6
+    style J fill:#dcfce7,stroke:#22c55e
+```
+
+#### `/create-pr` のフロー
+
+```mermaid
+flowchart TD
+    A[現在の状態を把握] --> B{mainブランチ?}
+    B -- Yes --> C{新しいブランチに<br/>切り替える?}
+    B -- No --> D
+    C -- Yes --> C2[ブランチ作成] --> D
+    C -- No --> ABORT[処理中止]
+    D{未コミット変更?}
+    D -- Yes --> E{コミットする?}
+    D -- No --> G
+    E -- Yes --> F["/commit 実行<br/>(skip-push skip-post-hooks)"]
+    E -- No --> ABORT
+
+    subgraph commit ["/commit 内部フロー"]
+        F --> F1{skip-pre-hooks?}
+        F1 -- No --> F2[🔵 pre-commit フック実行]
+        F1 -- Yes --> F3
+        F2 --> F3[変更の分割 & コミット作成]
+    end
+
+    F3 --> G[ベースブランチ確認]
+    G --> H{既存PRあり?}
+    H -- Yes --> I[rebase & push<br/>PR タイトル・本文を更新]
+    H -- No --> J[rebase & push<br/>PR 新規作成]
+    I --> K{skip-post-hooks?}
+    J --> K
+    K -- No --> L[🟠 post-pr フック実行<br/>ユーザー確認付き]
+    K -- Yes --> END[結果表示]
+    L --> END
+
+    style F2 fill:#dbeafe,stroke:#3b82f6
+    style L fill:#fef3c7,stroke:#f59e0b
+```
+
+#### フックの凡例
+
+| 色 | フック | タイミング |
+|----|--------|-----------|
+| 🔵 青 | `pre-commit` | コミット前に自動実行 |
+| 🟢 緑 | `post-push` | プッシュ後にユーザー確認付きで実行 |
+| 🟠 橙 | `post-pr` | PR作成・更新後にユーザー確認付きで実行 |
+
 ### フックの書式
 
 プロジェクトルートに `.claude/skill-hooks.md` を以下の形式で作成する。各コマンドごとにセクションを設け、フックポイントにスキルを紐付ける。
