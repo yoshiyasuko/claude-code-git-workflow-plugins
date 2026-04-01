@@ -23,7 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### ライフサイクルフックシステム
 
-プロジェクトルートに `.claude/skill-hooks.md` を定義することで、コマンドをプロジェクト固有に拡張できる：
+プロジェクトルートに `.claude/skill-hooks.md` を定義することで、コマンドをプロジェクト固有に拡張できる。`/setup-hooks` コマンドで対話的に生成・編集が可能：
 - `/commit`: `pre-commit`（ステージング前）、`post-push`（プッシュ後、ユーザー確認付き）
 - `/create-pr`: `post-pr`（PR 作成・更新後、ユーザー確認付き）
 
