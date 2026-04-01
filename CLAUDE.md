@@ -19,6 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 利用先プロジェクトの `.claude/skill-hooks.md` による**ライフサイクルフック**に対応 — コマンドがこのファイルを読み込み、フックポイントで `Skill` ツール経由で指定スキルを実行する
 - git コミットメッセージは HEREDOC 構文で渡す（シェルのエスケープ問題を回避）
 - コミットメッセージと PR タイトルは Conventional Commits 形式（`<type>(<scope>): <subject>`）
+- GitHub issue のタイトルは英語で記述する
 
 ### ライフサイクルフックシステム
 
