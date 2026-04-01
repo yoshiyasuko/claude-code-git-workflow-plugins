@@ -9,6 +9,7 @@ Claude Code 用の git ワークフロー自動化プラグイン。
 | `/commit` | Conventional Commits 形式でコミットを作成。プッシュ・ライフサイクルフックに対応 |
 | `/create-pr` | GitHub PR の作成・更新。自動 rebase、差分分析、ライフサイクルフックに対応 |
 | `/sync-main` | main に切り替えて最新化し、リモートで削除済みのローカルブランチをクリーンアップ |
+| `/setup-hooks` | `.claude/skill-hooks.md` を対話的に生成・編集。スキルの自動検出とプレビュー付き |
 
 ## ライフサイクルフック
 
