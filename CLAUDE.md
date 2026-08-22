@@ -15,7 +15,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### コマンドの設計パターン
 
 コマンドは日本語の手順書形式で記述されている。共通規約：
-- ユーザー確認には `AskUserQuestion` ツールを使用（テキスト内での質問はしない）
+- デフォルトは**自律モード** — 各判断ポイントでユーザーに確認せず Claude が状況から判断して進める。`interactive` 引数を付けると各判断ポイントで逐次確認するモードになる（`/setup-hooks` は対話ウィザードのため対象外）。force push や `git branch -D` などの不可逆な操作は自律モードでも必ず確認する
+- ユーザー確認を行う場面では `AskUserQuestion` ツールを使用（テキスト内での質問はしない）
 - 利用先プロジェクトの `.claude/skill-hooks.md` による**ライフサイクルフック**に対応 — コマンドがこのファイルを読み込み、フックポイントで `Skill` ツール経由で指定スキルを実行する
 - git コミットメッセージは HEREDOC 構文で渡す（シェルのエスケープ問題を回避）
 - コミットメッセージと PR タイトルは Conventional Commits 形式（`<type>(<scope>): <subject>`）
@@ -24,11 +25,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### ライフサイクルフックシステム
 
 プロジェクトルートに `.claude/skill-hooks.md` を定義することで、コマンドをプロジェクト固有に拡張できる。`/setup-hooks` コマンドで対話的に生成・編集が可能：
-- `/commit`: `pre-commit`（ステージング前）、`post-push`（プッシュ後、ユーザー確認付き）
-- `/create-pr`: `post-pr`（PR 作成・更新後、ユーザー確認付き）
+- `/commit`: `pre-commit`（ステージング前）、`post-push`（プッシュ後）
+- `/create-pr`: `post-pr`（PR 作成・更新後）
+
+post フック（`post-push` / `post-pr`）は、自律モード（デフォルト）では「説明」列の質問文を判断基準に Claude が実行要否を判断し、`interactive` 指定時は質問文と選択肢でユーザーに確認してから実行する。
 
 フック対応コマンドは `skip-pre-hooks`（pre フックをスキップ）と `skip-post-hooks`（post フックをスキップ）引数でフック実行を個別にバイパスできる。`/commit` は `skip-push` 引数でプッシュステップもスキップ可能。`/create-pr` も同じ `skip-pre-hooks` / `skip-post-hooks` 引数を受け取り、内部の `/commit` 呼び出しや自身の post-pr フックに反映する。
 
 ### コマンド間の依存関係
 
-`/create-pr` は未コミット変更がある場合に `/commit` を（Skill ツール経由で）呼び出す。常に `skip-push skip-post-hooks` を渡し（プッシュと post-push フックは create-pr 側で管理）、`skip-pre-hooks` は create-pr 自身の引数に含まれている場合のみ転送する。呼び出し後は create-pr フローのステップ4から再開する。`commit.md` および `create-pr.md` 双方にフロー復帰の指示を記述し、制御が途切れないようにしている。
+`/create-pr` は未コミット変更がある場合に `/commit` を（Skill ツール経由で）呼び出す。常に `skip-push skip-post-hooks` を渡し（プッシュと post-push フックは create-pr 側で管理）、`skip-pre-hooks` と `interactive` は create-pr 自身の引数に含まれている場合のみ転送する。呼び出し後は create-pr フローのステップ4から再開する。`commit.md` および `create-pr.md` 双方にフロー復帰の指示を記述し、制御が途切れないようにしている。
