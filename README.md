@@ -11,6 +11,20 @@ Claude Code 用の git ワークフロー自動化プラグイン。
 | `/sync-main` | main に切り替えて最新化し、リモートで削除済みのローカルブランチをクリーンアップ |
 | `/setup-hooks` | `.claude/skill-hooks.md` を対話的に生成・編集。スキルの自動検出とプレビュー付き |
 
+## 実行モード
+
+`/commit`・`/create-pr`・`/sync-main` はデフォルトで**自律モード**で動作する。各判断ポイント（プッシュするか、ブランチ名、ベースブランチ、post フックの実行など）でユーザーに確認せず、Claude が状況から判断して進める。ただし force push や `git branch -D` などの不可逆な操作は、自律モードでも必ずユーザーに確認する。
+
+従来どおり各判断ポイントで逐次確認したい場合は、`interactive` 引数を付けて実行する：
+
+```
+/commit interactive
+/create-pr interactive
+/sync-main interactive
+```
+
+`/setup-hooks` は対話ウィザードのため、常に対話的に動作する。
+
 ## ライフサイクルフック
 
 プロジェクト固有の拡張を **スキルフック** 設定ファイルで定義できる。プロジェクトルートに `.claude/skill-hooks.md` を作成してフックとスキルを紐付ける。
@@ -45,7 +59,7 @@ Claude Code 用の git ワークフロー自動化プラグイン。
 ```
 
 - **pre フック**（`pre-commit`）: 自動実行される。`/create-pr` 経由でも実行される
-- **post フック**（`post-push`, `post-pr`）: 「説明」列の質問文と選択肢でユーザーに確認してから実行される
+- **post フック**（`post-push`, `post-pr`）: 自律モード（デフォルト）では「説明」列の質問文を判断基準に Claude が実行要否を判断する。`interactive` 指定時は質問文と選択肢でユーザーに確認してから実行される
 - `skip-pre-hooks` / `skip-post-hooks` 引数で個別にスキップ可能
 
 ### 利用可能なフック
@@ -53,9 +67,9 @@ Claude Code 用の git ワークフロー自動化プラグイン。
 | コマンド | フック | タイミング | スキップ引数 |
 |---------|-------|-----------|-------------|
 | `/commit` | `pre-commit` | ステータス確認後、ステージング前 | `skip-pre-hooks` |
-| `/commit` | `post-push` | プッシュ後（ユーザー確認付き） | `skip-post-hooks` |
+| `/commit` | `post-push` | プッシュ後（自律: Claude 判断 / interactive: ユーザー確認） | `skip-post-hooks` |
 | `/create-pr` | `pre-commit` | 未コミット変更のコミット時（`/commit` 経由） | `skip-pre-hooks` |
-| `/create-pr` | `post-pr` | PR 作成・更新後（ユーザー確認付き） | `skip-post-hooks` |
+| `/create-pr` | `post-pr` | PR 作成・更新後（自律: Claude 判断 / interactive: ユーザー確認） | `skip-post-hooks` |
 
 `.claude/skill-hooks.md` が存在しない場合やフックが未定義の場合はスキップされる。
 
@@ -65,9 +79,10 @@ Claude Code 用の git ワークフロー自動化プラグイン。
 
 | 引数 | 効果 |
 |------|------|
+| `interactive` | 各判断ポイントでユーザーに逐次確認する |
 | `skip-pre-hooks` | pre-commit フックをスキップ |
 | `skip-post-hooks` | post-push フックをスキップ |
-| `skip-push` | プッシュ確認ステップをスキップ |
+| `skip-push` | プッシュステップをスキップ |
 
 他のコマンド（例: `/deploy`）から `/commit skip-push skip-pre-hooks skip-post-hooks` を呼び出すことで、コアのコミット処理のみを実行できる。
 
@@ -75,10 +90,17 @@ Claude Code 用の git ワークフロー自動化プラグイン。
 
 | 引数 | 効果 |
 |------|------|
+| `interactive` | 各判断ポイントでユーザーに逐次確認する（内部の commit 呼び出しにも転送） |
 | `skip-pre-hooks` | 内部 commit の pre-commit フックをスキップ |
 | `skip-post-hooks` | 内部 commit の post-push フックおよび create-pr の post-pr フックをスキップ |
 
 デフォルトでは `/create-pr` 経由でも pre-commit フックが実行される。
+
+### `/sync-main`
+
+| 引数 | 効果 |
+|------|------|
+| `interactive` | ブランチ削除前にユーザーに確認する |
 
 ## インストール
 

@@ -8,12 +8,14 @@ flowchart TD
     C --> D[変更の分割 & ステージング]
     D --> E[コミット作成]
     E --> F{skip-push?}
-    F -- No --> G{プッシュしますか?}
     F -- Yes --> END[完了]
-    G -- はい --> H[git push]
+    F -- No --> M{interactive?}
+    M -- No --> H[git push]
+    M -- Yes --> G{プッシュしますか?}
+    G -- はい --> H
     G -- いいえ --> END
     H --> I{skip-post-hooks?}
-    I -- No --> J[🟢 post-push フック実行<br/>ユーザー確認付き]
+    I -- No --> J[🟢 post-push フック実行<br/>自律: Claude判断 / interactive: ユーザー確認]
     I -- Yes --> END
     J --> END
 
@@ -21,9 +23,11 @@ flowchart TD
     style J fill:#dcfce7,stroke:#22c55e
 ```
 
+デフォルトは自律モード。`interactive` 引数を付けた場合のみ、プッシュ前と post-push フック実行前にユーザー確認が入る。
+
 ## フックの凡例
 
 | 色 | フック | タイミング |
 |----|--------|-----------|
 | 🔵 青 | `pre-commit` | コミット前に自動実行 |
-| 🟢 緑 | `post-push` | プッシュ後にユーザー確認付きで実行 |
+| 🟢 緑 | `post-push` | プッシュ後に実行（自律モードでは Claude が実行要否を判断、`interactive` 時はユーザー確認付き） |
